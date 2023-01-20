@@ -21,6 +21,8 @@ interface Props{
   username:string;
   setCustomUser:React.Dispatch<React.SetStateAction<string>>;
   customUser:string;
+  replyUser:string;
+  setReplyUser:React.Dispatch<React.SetStateAction<string>>;
 }
 
 
@@ -35,7 +37,9 @@ const Comment:React.FC<Props> = ({
   updateComment,
   username,
   customUser,
-  setCustomUser
+  setCustomUser,
+  replyUser,
+  setReplyUser,
 }) => {
   
   const canReply = Boolean(currentUserId);
@@ -60,11 +64,15 @@ const Comment:React.FC<Props> = ({
         </div>
           {!isEditing && <div className="comment-text">{comment.body}</div>}
           {isEditing && (
-            <CommentForm 
+            <CommentForm
+            replyUser={replyUser}
+            setReplyUser={setReplyUser} 
             customUser={customUser}
             setCustomUser={setCustomUser}
             username={username}
             submitLabel='Update' 
+            isEditing={true}
+            isReplying={false}
             hasCancelButton initialText={comment.body} 
             handleSubmit={(text:string) => updateComment(text, comment.id)} 
             handleCancel={() => setActiveComment(null)} />
@@ -77,17 +85,23 @@ const Comment:React.FC<Props> = ({
           </div>
           {isReplying && (
             <CommentForm
+            replyUser={replyUser}
+            setReplyUser={setReplyUser}
+            isEditing={false}
+            isReplying={true}
             customUser={customUser}
             setCustomUser={setCustomUser}
             username={username} 
             submitLabel='Reply'
-            handleSubmit={(text: string) => addComment(text, replyId)} hasCancelButton={false} initialText={''} handleCancel={undefined} />
+            handleSubmit={(text: string) => addComment(text, replyId)} hasCancelButton={true} initialText={''} handleCancel={() => setActiveComment(null)} />
           )}
-          {replies.length > 0 && (
+          {replies.length > 0 &&  (
             <div className="replies">
               {replies.map((reply => (
 
                 <Comment
+                replyUser={replyUser}
+                setReplyUser={setReplyUser}
                 customUser={customUser}  
                 setCustomUser={setCustomUser}
                 username={username} 

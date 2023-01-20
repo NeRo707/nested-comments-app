@@ -9,9 +9,11 @@ interface Props{
   username: string;
   setCustomUser:React.Dispatch<React.SetStateAction<string>>;
   customUser:string;
+  replyUser:string;
+  setReplyUser:React.Dispatch<React.SetStateAction<string>>;
 }
 
-const Comments:React.FC<Props> = ({customUser, currentUserId, username, setCustomUser}) => {
+const Comments:React.FC<Props> = ({customUser, currentUserId, username, setCustomUser, replyUser, setReplyUser}) => {
   const [backendComments, setBackendComments] = useState<Array<IProps>>([]);
   const [activeComment, setActiveComment] = useState<any>(null);
 
@@ -24,15 +26,16 @@ const Comments:React.FC<Props> = ({customUser, currentUserId, username, setCusto
     .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
   
   };
-
-  
-
+  console.log('0: ',activeComment);
   const addComment = (text:string, parentId:string) => {
     // console.log(parentId)
     // console.log("AddComment", text, parentId);
     createCommentApi(text, parentId, currentUserId, username).then(comment => {
-      setBackendComments([comment, ...backendComments])
+      setBackendComments([comment, ...backendComments]);
+      console.log('1: ',activeComment);
       setActiveComment(null);
+      setCustomUser('');
+      console.log('2: ',activeComment);
     });
 
 
@@ -73,11 +76,13 @@ const Comments:React.FC<Props> = ({customUser, currentUserId, username, setCusto
   return (
     <div className="comments">
       <h3 className="comments-title">Comments</h3>
-      <div className="comment-form-title">Write a comment</div>
-      <CommentForm customUser={customUser} setCustomUser={setCustomUser} username={username} submitLabel="Write" handleSubmit={addComment} hasCancelButton={false} initialText={''} handleCancel={undefined} />
+    
+      <CommentForm replyUser={replyUser} setReplyUser={setReplyUser} customUser={customUser} setCustomUser={setCustomUser} username={username} submitLabel="Write" handleSubmit={addComment} hasCancelButton={false} initialText={''} handleCancel={undefined} />
       <div className="comments-container">
       {rootComments.map((rootComment) => (
         <Comment
+        replyUser={replyUser}
+        setReplyUser={setReplyUser}
         customUser={customUser}
         setCustomUser={setCustomUser}
         username={username}
